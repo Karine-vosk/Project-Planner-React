@@ -5,36 +5,13 @@ import ProjectsSidebar from './components/ProjectsSidebar';
 import NoProjectSelected from './components/NoProjectSelected.jsx';
 import SelectedProject from './components/SelectedProject.jsx';
 
-function App() {
+import TaskContextProvider from './store/task-context.jsx';
+
+export default function App() {
   const [projectsState, setProjectState] = useState({
     selectedProjectId: undefined,
     projects: [],
-    tasks: [],
   });
-
-  function handleAddTask(text) {
-    const taskId = Math.random();
-    setProjectState((prevState) => {
-      const newTask = {
-        text,
-        projectId: prevState.selectedProjectId,
-        id: taskId,
-      };
-      return {
-        ...prevState,
-        tasks: [...prevState.tasks, newTask],
-      };
-    });
-  }
-
-  function handleDeleteTask(id) {
-    setProjectState((prevState) => {
-      return {
-        ...prevState,
-        tasks: prevState.tasks.filter((task) => task.id !== id),
-      };
-    });
-  }
 
   function handleSelectProject(id) {
     setProjectState((prevState) => {
@@ -84,24 +61,18 @@ function App() {
         ...prevState,
         selectedProjectId: undefined,
         projects: prevState.projects.filter(
-          (project) => project.id !== prevState.selectedProjectId
+          (project) => project.id !== prevState.selectedProjectId,
         ),
       };
     });
   }
 
   const selectedProject = projectsState.projects.find(
-    (project) => project.id === projectsState.selectedProjectId
+    (project) => project.id === projectsState.selectedProjectId,
   );
 
   let content = (
-    <SelectedProject
-      project={selectedProject}
-      onDelete={handleDeleteProject}
-      onDeleteTask={handleDeleteTask}
-      onAddTask={handleAddTask}
-      tasks={projectsState.tasks}
-    />
+    <SelectedProject project={selectedProject} onDelete={handleDeleteProject} />
   );
 
   if (projectsState.selectedProjectId === null) {
@@ -113,16 +84,16 @@ function App() {
   }
 
   return (
-    <main className='h-screen my-8 flex gap-8'>
-      <ProjectsSidebar
-        onAddProject={handleStartAddProject}
-        projects={projectsState.projects}
-        onSelectProject={handleSelectProject}
-        selectedProjectId={projectsState.selectedProjectId}
-      />
-      {content}
-    </main>
+    <TaskContextProvider>
+      <main className='h-screen my-8 flex gap-8'>
+        <ProjectsSidebar
+          onAddProject={handleStartAddProject}
+          projects={projectsState.projects}
+          onSelectProject={handleSelectProject}
+          selectedProjectId={projectsState.selectedProjectId}
+        />
+        {content}
+      </main>
+    </TaskContextProvider>
   );
 }
-
-export default App;

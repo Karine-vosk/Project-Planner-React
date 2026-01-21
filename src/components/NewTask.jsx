@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, use } from 'react';
+import { TaskContext } from '../store/task-context.jsx';
 
-const NewTask = ({ onAdd }) => {
+const NewTask = ({ projectId }) => {
+  const { onAddTask } = use(TaskContext);
   const [enteredTask, setEnteredTask] = useState('');
 
   function handleChange(e) {
@@ -11,7 +13,7 @@ const NewTask = ({ onAdd }) => {
     if (enteredTask.trim() === '') {
       return;
     }
-    onAdd(enteredTask);
+    onAddTask(enteredTask, projectId);
     setEnteredTask('');
   }
 
